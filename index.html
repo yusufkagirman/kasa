@@ -9,11 +9,11 @@
 <style>
 :root {
   --bg: #f6f5f2; --kart: #ffffff; --cizgi: #e6e3dc; --yazi: #1b1d21; --soluk: #6b6f76;
-  --gelir: #1f8a5b; --gider: #c2453d; --vurgu: #2d5bd7; --golge: 0 1px 2px rgb(0 0 0 / .05);
+  --gelir: #1f8a5b; --gider: #c2453d; --vurgu: #2d5bd7; --uyari: #b7791f; --golge: 0 1px 2px rgb(0 0 0 / .05);
 }
 @media (prefers-color-scheme: dark) {
   :root { --bg: #0f1115; --kart: #181b21; --cizgi: #2a2e36; --yazi: #e9eaec; --soluk: #9095a0;
-    --gelir: #4cc38a; --gider: #f07167; --vurgu: #7c9cff; --golge: none; }
+    --gelir: #4cc38a; --gider: #f07167; --vurgu: #7c9cff; --uyari: #e0a84a; --golge: none; }
 }
 * { box-sizing: border-box; }
 html { -webkit-text-size-adjust: 100%; }
@@ -22,16 +22,20 @@ body { margin: 0; background: var(--bg); color: var(--yazi); font: 15px/1.45 sys
 button, input, select { font: inherit; color: inherit; }
 input, select { font-size: 16px; } /* iOS yakınlaştırmasın */
 .sar { max-width: 960px; margin: 0 auto; padding: 16px 16px calc(96px + env(safe-area-inset-bottom)); }
-header { display: flex; align-items: center; justify-content: space-between; padding: 8px 0 16px; }
+header { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 8px 0 16px; }
 h1 { font-size: 20px; margin: 0; letter-spacing: -.01em; }
 h2 { font-size: 13px; font-weight: 600; color: var(--soluk); text-transform: uppercase; letter-spacing: .06em; margin: 0 0 12px; }
+.baslik { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
+.baslik h2 { margin: 0; }
 .kart { background: var(--kart); border: 1px solid var(--cizgi); border-radius: 14px; padding: 16px; box-shadow: var(--golge); }
+.kart.uyari { border-left: 3px solid var(--uyari); }
 .izgara { display: grid; gap: 12px; }
 @media (min-width: 720px) { .izgara.iki { grid-template-columns: 1fr 1fr; } }
 .ust { display: grid; gap: 12px; grid-template-columns: 1fr 1fr; }
 .ust .kart:first-child, .ust .kart:last-child { grid-column: 1 / -1; }
 @media (min-width: 720px) { .ust { grid-template-columns: 2fr 1fr 1fr 1fr; } .ust .kart:first-child, .ust .kart:last-child { grid-column: auto; } }
 .etiket { color: var(--soluk); font-size: 13px; }
+label.etiket { display: grid; gap: 4px; }
 .buyuk { font-size: 28px; font-weight: 650; letter-spacing: -.02em; margin-top: 2px; }
 .orta { font-size: 19px; font-weight: 600; margin-top: 2px; }
 .not { color: var(--soluk); font-size: 13px; margin-top: 4px; }
@@ -39,7 +43,7 @@ h2 { font-size: 13px; font-weight: 600; color: var(--soluk); text-transform: upp
 .satir { display: flex; align-items: center; gap: 10px; padding: 10px 0; border-top: 1px solid var(--cizgi); }
 .satir:first-child { border-top: 0; }
 .satir .ad { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.satir .alt { color: var(--soluk); font-size: 12.5px; }
+.alt { color: var(--soluk); font-size: 12.5px; }
 .nokta { width: 10px; height: 10px; border-radius: 50%; flex: none; }
 .cubuk { height: 6px; border-radius: 3px; background: var(--cizgi); margin-top: 6px; overflow: hidden; }
 .cubuk i { display: block; height: 100%; border-radius: 3px; }
@@ -54,19 +58,27 @@ input, select { background: var(--kart); border: 1px solid var(--cizgi); border-
 .dugme { border: 0; border-radius: 10px; padding: 11px 16px; background: var(--vurgu); color: #fff; font-weight: 600; cursor: pointer; }
 .dugme.ikinci { background: var(--cizgi); color: var(--yazi); }
 .silik { background: none; border: 0; color: var(--soluk); cursor: pointer; padding: 6px; }
-/* sekmeler: mobilde altta, geniş ekranda başlıkta */
+.cipler { display: flex; flex-wrap: wrap; gap: 6px; }
+.cip { border: 1px solid var(--cizgi); background: var(--bg); border-radius: 99px; padding: 5px 11px; font-size: 13px; cursor: pointer; }
+.cip.on { background: var(--vurgu); border-color: transparent; color: #fff; }
+.anahtar { display: flex; gap: 8px; align-items: center; font-size: 14px; cursor: pointer; }
+.anahtar input { width: auto; }
+/* sekmeler: mobilde altta (ortada +), geniş ekranda başlıkta; + masaüstünde başlıkta */
 nav { position: fixed; left: 0; right: 0; bottom: 0; display: flex; background: var(--kart); border-top: 1px solid var(--cizgi);
   padding-bottom: env(safe-area-inset-bottom); z-index: 5; }
 nav button { flex: 1; background: none; border: 0; padding: 12px 0 10px; color: var(--soluk); font-size: 13px; cursor: pointer; }
 nav button.on { color: var(--vurgu); font-weight: 600; }
+nav .nav-ekle { flex: 0 0 64px; padding: 0; }
+nav .nav-ekle span { display: grid; place-items: center; width: 48px; height: 48px; margin: -16px auto 0; border-radius: 50%;
+  background: var(--vurgu); color: #fff; font-size: 26px; box-shadow: 0 4px 14px rgb(0 0 0 / .25); }
+#ekleUst { display: none; }
 @media (min-width: 720px) {
   nav { position: static; border: 1px solid var(--cizgi); border-radius: 12px; padding: 4px; margin-bottom: 16px; }
   nav button { border-radius: 9px; padding: 8px 0; }
   nav button.on { background: var(--bg); }
+  nav .nav-ekle { display: none; }
+  #ekleUst { display: block; padding: 8px 14px; }
 }
-.ekle { position: fixed; right: 16px; bottom: calc(68px + env(safe-area-inset-bottom)); width: 56px; height: 56px; border-radius: 50%;
-  border: 0; background: var(--vurgu); color: #fff; font-size: 28px; box-shadow: 0 6px 20px rgb(0 0 0 / .25); cursor: pointer; z-index: 6; }
-@media (min-width: 720px) { .ekle { bottom: 24px; right: 24px; } }
 dialog { border: 1px solid var(--cizgi); border-radius: 16px; background: var(--kart); color: var(--yazi); width: min(440px, calc(100% - 32px)); padding: 20px; }
 dialog::backdrop { background: rgb(0 0 0 / .45); }
 dialog form { display: grid; gap: 10px; }
@@ -74,6 +86,7 @@ dialog form { display: grid; gap: 10px; }
 .secim label { text-align: center; padding: 8px 0; border-radius: 8px; cursor: pointer; color: var(--soluk); }
 .secim input { display: none; }
 .secim label:has(input:checked) { background: var(--kart); color: var(--yazi); font-weight: 600; box-shadow: var(--golge); }
+.yan { display: flex; gap: 8px; }
 #giris { max-width: 360px; margin: 18vh auto 0; display: grid; gap: 10px; padding: 0 16px; }
 .hata { color: var(--gider); font-size: 14px; min-height: 1em; }
 .bos { color: var(--soluk); text-align: center; padding: 24px 0; }
@@ -91,24 +104,31 @@ dialog form { display: grid; gap: 10px; }
 </form>
 
 <div class="sar" id="uygulama" hidden>
-  <header><h1>Kasa</h1><button class="silik" id="cik">Çıkış</button></header>
+  <header><h1>Kasa</h1><div class="yan"><button class="dugme" id="ekleUst">+ Kayıt</button><button class="silik" id="cik">Çıkış</button></div></header>
   <nav>
     <button data-s="ozet" class="on">Özet</button>
     <button data-s="nereye">Nereye gitti</button>
+    <button class="nav-ekle" data-ekle aria-label="Kayıt ekle"><span>+</span></button>
     <button data-s="islemler">İşlemler</button>
+    <button data-s="birikim">Birikim</button>
   </nav>
 
   <section id="s-ozet" class="izgara">
+    <div class="kart uyari" id="incele" hidden></div>
     <div class="ust" id="ustKartlar"></div>
     <div class="izgara iki">
       <div class="kart"><h2>Son 6 ay</h2><div class="grafik"><canvas id="gAylar"></canvas></div></div>
-      <div class="kart"><h2>Hesaplar</h2><div id="hesaplar"></div></div>
+      <div class="kart"><h2>Gider yapısı (bu ay)</h2><div id="kovalar"></div></div>
     </div>
-    <div class="kart"><h2>Gelir yapısı (bu ay)</h2><div id="gelirYapi"></div></div>
+    <div class="izgara iki">
+      <div class="kart"><div class="baslik"><h2>Hesaplar</h2><button class="silik" id="hesapYeni">+ Hesap</button></div><div id="hesaplar"></div></div>
+      <div class="kart"><h2>Gelir yapısı (bu ay)</h2><div id="gelirYapi"></div></div>
+    </div>
   </section>
 
   <section id="s-nereye" class="izgara" hidden>
-    <div class="araclar"><input type="month" id="ay"></div>
+    <div class="araclar"><input type="month" id="ay">
+      <select id="kova"><option value="">Tüm harcamalar</option><option value="sabit">Sabit</option><option value="duzensiz">Düzensiz</option><option value="beklenmedik">Beklenmedik</option></select></div>
     <div class="izgara iki">
       <div class="kart"><h2>Dağılım</h2><div class="grafik"><canvas id="gPasta"></canvas></div><div class="not" id="pastaNot"></div></div>
       <div class="kart"><h2>Kategoriler · 3 aylık ortalamaya göre</h2><div id="katListe"></div></div>
@@ -122,12 +142,19 @@ dialog form { display: grid; gap: 10px; }
     </div>
     <div class="kart" id="liste"></div>
   </section>
+
+  <section id="s-birikim" class="izgara" hidden>
+    <div class="kart"><h2>Bu ayın artısı nereye?</h2><div id="oneri"></div></div>
+    <div class="izgara iki">
+      <div class="kart"><h2>Önümüzdeki 90 gün (nakit + banka + kart)</h2><div class="grafik"><canvas id="gTahmin"></canvas></div><div class="not" id="tahminNot"></div></div>
+      <div class="kart"><div class="baslik"><h2>Hedefler</h2><button class="silik" id="hedefYeni">+ Hedef</button></div><div id="hedefler"></div><div class="not" id="hedefNot"></div></div>
+    </div>
+    <div class="kart"><h2>Altın ve döviz · güncel değer</h2><div id="varliklar"></div><div class="not" id="kurNot"></div></div>
+  </section>
 </div>
 
-<button class="ekle" id="ekleBtn" hidden aria-label="İşlem ekle">+</button>
-
 <dialog id="ekleDlg">
-  <form method="dialog" id="ekleForm">
+  <form id="ekleForm">
     <h2 id="fBaslik" style="margin:0">Yeni kayıt</h2>
     <div class="secim">
       <label><input type="radio" name="yon" value="gider" checked>Gider</label>
@@ -135,13 +162,43 @@ dialog form { display: grid; gap: 10px; }
       <label><input type="radio" name="yon" value="transfer">Transfer</label>
     </div>
     <input name="tutar" inputmode="decimal" placeholder="Tutar (₺)" required autocomplete="off">
+    <div class="cipler" id="hizli"></div>
     <select name="kategori_id" id="fKat"></select>
     <select name="hesap_id" id="fHesap"></select>
     <select name="hedef_hesap_id" id="fHedef" hidden></select>
     <input name="aciklama" placeholder="Açıklama (isteğe bağlı)" autocomplete="off">
     <input name="tarih" type="date" required>
+    <label class="anahtar" id="fBek"><input type="checkbox" name="beklenmedik"> ⚡ Beklenmedik gider (arıza, acil sağlık, ceza…)</label>
+    <div id="ogret" hidden><div class="etiket" style="margin-bottom:6px">Bota öğret: seçtiğin kelime bundan sonra bu kategoriye gider</div><div class="cipler" id="ogretK"></div></div>
     <div class="hata" id="fHata"></div>
-    <div style="display:flex;gap:8px"><button class="dugme ikinci" value="iptal" formnovalidate style="flex:1">Vazgeç</button><button class="dugme" value="kaydet" style="flex:2">Kaydet</button></div>
+    <div class="yan"><button type="button" class="dugme ikinci kapat" style="flex:1">Vazgeç</button><button class="dugme" style="flex:2">Kaydet</button></div>
+  </form>
+</dialog>
+
+<dialog id="hesapDlg">
+  <form id="hesapForm">
+    <h2 id="hBaslik" style="margin:0">Hesap</h2>
+    <input name="ad" placeholder="Ad (ör. Nakit, Ziraat)" required autocomplete="off">
+    <select name="tur"><option value="nakit">Nakit</option><option value="banka">Banka</option><option value="kart">Kredi kartı</option>
+      <option value="altin">Altın</option><option value="doviz">Döviz</option><option value="fon">Fon / birikim</option></select>
+    <label class="etiket">Açılış bakiyesi (₺): sisteme başladığın gün içinde olan para (altın/dövizde alış maliyeti)
+      <input name="acilis" inputmode="decimal" autocomplete="off"></label>
+    <div id="hBirim"><div class="etiket" style="margin-bottom:4px">Güncel değer için elindeki miktar</div>
+      <div class="yan"><input name="miktar" inputmode="decimal" placeholder="Miktar" autocomplete="off"><select name="birim"></select></div></div>
+    <label class="anahtar"><input type="checkbox" name="aktif"> Görünsün</label>
+    <div class="hata" id="hHata"></div>
+    <div class="yan"><button type="button" class="dugme ikinci kapat" style="flex:1">Vazgeç</button><button class="dugme" style="flex:2">Kaydet</button></div>
+  </form>
+</dialog>
+
+<dialog id="hedefDlg">
+  <form id="hedefForm">
+    <h2 style="margin:0">Hedef</h2>
+    <input name="ad" placeholder="Ad (ör. Acil fon, Hac, Laptop)" required autocomplete="off">
+    <input name="tutar" inputmode="decimal" placeholder="Hedef tutar (₺)" required autocomplete="off">
+    <label class="etiket">Şu ana kadar bu hedefe ayırdığın (₺)<input name="biriken" inputmode="decimal" autocomplete="off"></label>
+    <div class="hata" id="gHata"></div>
+    <div class="yan"><button type="button" class="dugme ikinci kapat" style="flex:1">Vazgeç</button><button type="button" class="dugme ikinci" id="hedefSil">Sil</button><button class="dugme" style="flex:2">Kaydet</button></div>
   </form>
 </dialog>
 
@@ -151,10 +208,18 @@ dialog form { display: grid; gap: 10px; }
 const $ = id => document.getElementById(id);
 const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({'&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;'}[c]));
 const TL = n => Number(n).toLocaleString('tr-TR', {maximumFractionDigits: 0}) + ' ₺';
+// "1.250,5" · "2,5" · "2.5" · "1.200": virgül varsa ondalıktır; yalnız nokta varsa 3'lü gruplar binliktir.
+const sayi = s => { s = String(s ?? '').replace(/\s/g, ''); if (!s) return NaN;
+  if (s.includes(',')) return Number(s.replace(/\./g, '').replace(',', '.'));
+  return /^\d{1,3}(\.\d{3})+$/.test(s) ? Number(s.replace(/\./g, '')) : Number(s); };
+const virgul = n => n == null ? '' : String(n).replace('.', ',');
 const ayAnahtar = d => d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0');
 const AYLAR = ['Oca', 'Şub', 'Mar', 'Nis', 'May', 'Haz', 'Tem', 'Ağu', 'Eyl', 'Eki', 'Kas', 'Ara'];
+const renk = v => getComputedStyle(document.documentElement).getPropertyValue(v).trim();
+const kisa = v => Math.abs(v) >= 1000 ? v / 1000 + 'b' : v;
 const sakla = {al: k => { try { return localStorage.getItem(k); } catch { return null; } },
   koy: (k, v) => { try { v == null ? localStorage.removeItem(k) : localStorage.setItem(k, v); } catch {} }};
+document.querySelectorAll('.kapat').forEach(b => b.onclick = () => b.closest('dialog').close());
 
 /* ---------- oturum: refresh token cihazda kalır, telefonda her seferinde giriş istenmez ---------- */
 let tok = null;
@@ -170,7 +235,10 @@ async function api(yol, o = {}, tekrar = true) {
   if (!r.ok) throw new Error((await r.json().catch(() => ({}))).message || r.status);
   return r.status === 204 ? null : r.json().catch(() => null);
 }
-function girisGoster(m = '') { $('giris').hidden = false; $('uygulama').hidden = true; $('ekleBtn').hidden = true; $('ghata').textContent = m; }
+const yaz = (tablo, id, govde) => id
+  ? api(`${tablo}?id=eq.${id}`, {method: 'PATCH', headers: {Prefer: 'return=minimal'}, body: JSON.stringify(govde)})
+  : api(tablo, {method: 'POST', headers: {Prefer: 'return=minimal'}, body: JSON.stringify(govde)});
+function girisGoster(m = '') { $('giris').hidden = false; $('uygulama').hidden = true; $('ghata').textContent = m; }
 $('giris').onsubmit = async e => {
   e.preventDefault();
   try { await authIste({email: $('em').value.trim().toLowerCase(), password: $('pw').value}, 'password'); await ac(); }
@@ -178,50 +246,105 @@ $('giris').onsubmit = async e => {
 };
 $('cik').onclick = () => { sakla.koy('kasa_rt', null); tok = null; girisGoster(); };
 
+/* ---------- kur: finans.truncgil.com (ücretsiz, anahtarsız). Alınamazsa son bilinen kur kullanılır. ---------- */
+const BIRIM = {GRA: 'gram altın', CEYREKALTIN: 'çeyrek altın', YARIMALTIN: 'yarım altın', TAMALTIN: 'tam altın', USD: 'dolar', EUR: 'euro', GBP: 'sterlin'};
+let KUR = null;
+try { KUR = JSON.parse(sakla.al('kasa_kur')); } catch {}
+async function kurCek() {
+  try {
+    // Yanıt bazen yarım geliyor; JSON.parse yerine gereken kodları tek tek okuyoruz.
+    const s = await (await fetch('https://finans.truncgil.com/v4/today.json', {cache: 'no-store'})).text();
+    const d = {};
+    for (const k in BIRIM) { const m = s.match(new RegExp(`"${k}":\\{[^}]*?"Buying":([\\d.]+)`)); if (m && +m[1] > 0) d[k] = +m[1]; }
+    if (Object.keys(d).length) { KUR = {t: Date.now(), d}; sakla.koy('kasa_kur', JSON.stringify(KUR)); }
+  } catch {}
+}
+const miktarYaz = h => `${virgul(Number(h.miktar))} ${BIRIM[h.birim]}`;
+
 /* ---------- veri ---------- */
-let K = [], H = [], B = [], I = [];
-const kat = id => K.find(k => k.id === id) || {ad: '—', renk: '#888', tur: 'gider'};
+let K = [], H = [], B = [], I = [], G = [], D = [];
+const kat = id => K.find(k => k.id === id) || {ad: '—', renk: '#888', tur: 'gider', nitelik: 'duzensiz', anahtar: []};
 const hes = id => H.find(h => h.id === id) || {ad: '—'};
+// Hesabın bugünkü değeri: altın/döviz miktarı girilmişse güncel kurla, değilse TL bakiye (maliyet).
+const deger = b => { if (!b) return 0; const h = hes(b.id); return h.birim && h.miktar && KUR?.d[h.birim] ? h.miktar * KUR.d[h.birim] : Number(b.bakiye); };
+// Kaydın kovası: işaretliyse beklenmedik, değilse kategorinin niteliği (sabit/düzensiz).
+const kova = i => i.beklenmedik ? 'beklenmedik' : kat(i.kategori_id).nitelik || 'duzensiz';
 async function yukle() {
   const bas = new Date(); bas.setMonth(bas.getMonth() - 12, 1); bas.setHours(0, 0, 0, 0);
-  [K, H, B, I] = await Promise.all([
-    api('kategori?select=*&order=id'), api('hesap?select=*&aktif=eq.true&order=id'), api('bakiye?select=*&order=id'),
+  [K, H, B, I, G, D] = await Promise.all([
+    api('kategori?select=*&order=id'), api('hesap?select=*&order=id'), api('bakiye?select=*&order=id'),
     api(`islem?select=*&tarih=gte.${bas.toISOString()}&order=tarih.desc,id.desc`),
+    api('hedef?select=*&order=sira,id'), api('borc?select=*&kapandi=eq.false'),
   ]);
   I.forEach(i => { i.tutar = Number(i.tutar); i.d = new Date(i.tarih); });
+  G.forEach(g => { g.tutar = Number(g.tutar); g.biriken = Number(g.biriken); });
+  H.forEach(h => { h.miktar = h.miktar == null ? null : Number(h.miktar); });
 }
-// Bir ayın harcama/gelir toplamları. Transferler (altın alımı, ATM, borç) harcama değildir.
-function ayOzet(anahtar) {
-  const o = {gelir: 0, gider: 0, yatirim: 0, pasif: 0, kat: {}};
+// Bir ayın toplamları. Transferler (altın alımı, ATM, borç) harcama değildir. filtre verilirse kat yalnız o kovayı sayar.
+function ayOzet(anahtar, filtre = '') {
+  const o = {gelir: 0, gelirSabit: 0, pasif: 0, gider: 0, yatirim: 0, sabit: 0, duzensiz: 0, beklenmedik: 0, kat: {}};
   for (const i of I) {
     if (i.yon === 'transfer' || ayAnahtar(i.d) !== anahtar) continue;
     const k = kat(i.kategori_id);
-    if (i.yon === 'gelir') { o.gelir += i.tutar; if (k.pasif) o.pasif += i.tutar; continue; }
-    if (k.tur === 'yatirim') o.yatirim += i.tutar; else o.gider += i.tutar;
+    if (i.yon === 'gelir') { o.gelir += i.tutar; if (k.pasif) o.pasif += i.tutar; if (k.nitelik === 'sabit') o.gelirSabit += i.tutar; continue; }
+    if (k.tur === 'yatirim') o.yatirim += i.tutar; else { o.gider += i.tutar; o[kova(i)] += i.tutar; }
+    if (filtre && (k.tur === 'yatirim' || kova(i) !== filtre)) continue;
     o.kat[i.kategori_id] = (o.kat[i.kategori_id] || 0) + i.tutar;
   }
   return o;
 }
 const ayGeri = (n, d = new Date()) => { const x = new Date(d.getFullYear(), d.getMonth() - n, 1); return ayAnahtar(x); };
 
+// 90 günlük likit para (nakit + banka + kart) tahmini. Son 31 gündeki sabit kayıtlar her ay aynı gün tekrar eder;
+// düzensiz + beklenmedik gider son 90 günün günlük ortalamasıyla akar. Düzensiz gelir (freelance) katılmaz: temkinli.
+// ponytail: sabitlerin "aynı gün tekrar" varsayımı; Faz 2B'deki tekrarlayanlar tablosu gelince oradan okunur.
+function tahmin() {
+  const bugun = new Date(); bugun.setHours(0, 0, 0, 0);
+  const son = I.filter(i => i.yon === 'gider' && kat(i.kategori_id).tur !== 'yatirim' && bugun - i.d < 90 * 864e5);
+  const ilk = son.length ? Math.min(...son.map(i => i.d)) : bugun;
+  const gunSay = Math.min(90, Math.max(7, Math.ceil((bugun - ilk) / 864e5) + 1));
+  let duz = 0, bek = 0, sabitGider = 0, sabitGelir = 0;
+  for (const i of son) { const v = kova(i); if (v === 'duzensiz') duz += i.tutar; else if (v === 'beklenmedik') bek += i.tutar; }
+  const olay = {};
+  for (const i of I) {
+    if (i.yon === 'transfer' || i.beklenmedik || kat(i.kategori_id).nitelik !== 'sabit' || bugun - i.d > 31 * 864e5) continue;
+    const t = i.yon === 'gelir' ? i.tutar : -i.tutar;
+    if (t > 0) sabitGelir += t; else sabitGider -= t;
+    for (let n = 1; n <= 4; n++) {
+      const g = Math.round((new Date(i.d.getFullYear(), i.d.getMonth() + n, i.d.getDate()) - bugun) / 864e5);
+      if (g > 0 && g <= 90) olay[g] = (olay[g] || 0) + t;
+    }
+  }
+  const likit = B.filter(b => ['nakit', 'banka', 'kart'].includes(b.tur)).reduce((s, b) => s + Number(b.bakiye), 0);
+  const gunluk = (duz + bek) / gunSay, seri = [likit];
+  for (let g = 1; g <= 90; g++) seri.push(seri[g - 1] - gunluk + (olay[g] || 0));
+  return {seri, likit, gunluk, duzAylik: duz / gunSay * 30, bekAylik: bek / gunSay * 30, sabitGider, sabitGelir};
+}
+
 /* ---------- Özet ---------- */
-let gAylar, gPasta;
+let gAylar, gPasta, gTahmin;
 function ozetCiz() {
-  const simdi = new Date(), bu = ayOzet(ayAnahtar(simdi));
-  const net = B.reduce((s, b) => s + Number(b.bakiye), 0);
+  const simdi = new Date(), bu = ayOzet(ayAnahtar(simdi)), t = tahmin();
+  const net = B.reduce((s, b) => s + deger(b), 0);
   const gun = simdi.getDate(), ayGun = new Date(simdi.getFullYear(), simdi.getMonth() + 1, 0).getDate();
-  const tahmin = bu.gider / gun * ayGun;
+  // Ay sonu: sabitler tam ay, düzensiz bu ayın günlük hızıyla, beklenmedik ortalama payıyla.
+  const ayTahmin = Math.max(bu.sabit, t.sabitGider) + bu.duzensiz / gun * ayGun + Math.max(bu.beklenmedik, t.bekAylik);
   const kalan = bu.gelir - bu.gider - bu.yatirim;
   const oran = bu.gelir ? Math.round((bu.gelir - bu.gider) / bu.gelir * 100) : null;
   $('ustKartlar').innerHTML = `
-    <div class="kart"><div class="etiket">Net varlık</div><div class="buyuk">${TL(net)}</div><div class="not">Tüm hesaplar, kart borcu düşülmüş</div></div>
-    <div class="kart"><div class="etiket">Bu ay gelir</div><div class="orta yesil">${TL(bu.gelir)}</div></div>
-    <div class="kart"><div class="etiket">Bu ay gider</div><div class="orta kirmizi">${TL(bu.gider)}</div><div class="not">Bu hızla ay sonu ≈ ${TL(tahmin)}</div></div>
+    <div class="kart"><div class="etiket">Net varlık</div><div class="buyuk">${TL(net)}</div><div class="not">Tüm hesaplar, altın/döviz güncel kurla, kart borcu düşülmüş</div></div>
+    <div class="kart"><div class="etiket">Bu ay gelir</div><div class="orta yesil">${TL(bu.gelir)}</div><div class="not">Sabit ${TL(bu.gelirSabit)} · düzensiz ${TL(bu.gelir - bu.gelirSabit)}</div></div>
+    <div class="kart"><div class="etiket">Bu ay gider</div><div class="orta kirmizi">${TL(bu.gider)}</div><div class="not">Ay sonu ≈ ${TL(ayTahmin)}</div></div>
     <div class="kart"><div class="etiket">Kalan</div><div class="orta">${TL(kalan)}</div><div class="not">${oran == null ? 'Gelir girilmedi' : `Tasarruf oranı %${oran}`}${bu.yatirim ? ` · yatırım ${TL(bu.yatirim)}` : ''}</div></div>`;
 
+  // Bottan kategorisi çözülemeden gelen kayıtlar: dokun, düzelt.
+  const incele = I.filter(i => i.kaynak === 'telegram' && ['Diğer', 'Diğer gelir'].includes(kat(i.kategori_id).ad));
+  $('incele').hidden = !incele.length;
+  $('incele').innerHTML = `<h2>Kategorisi belli değil · ${incele.length}</h2>` + incele.slice(0, 5).map(i => `
+    <div class="satir" data-id="${i.id}" style="cursor:pointer"><span class="ad">${esc(i.aciklama || '—')}<div class="alt">${i.d.toLocaleDateString('tr-TR', {day: 'numeric', month: 'long'})} · dokun, kategorisini seç</div></span><b>${TL(i.tutar)}</b></div>`).join('');
+
   const anahtarlar = [5, 4, 3, 2, 1, 0].map(n => ayGeri(n));
-  const ozetler = anahtarlar.map(ayOzet);
-  const renk = v => getComputedStyle(document.documentElement).getPropertyValue(v).trim();
+  const ozetler = anahtarlar.map(a => ayOzet(a));
   gAylar?.destroy();
   gAylar = new Chart($('gAylar'), {
     type: 'bar',
@@ -230,10 +353,20 @@ function ozetCiz() {
       {label: 'Gider', data: ozetler.map(o => o.gider), backgroundColor: renk('--gider'), borderRadius: 4},
     ]},
     options: {maintainAspectRatio: false, plugins: {legend: {labels: {color: renk('--soluk'), boxWidth: 10}}, tooltip: {callbacks: {label: c => c.dataset.label + ': ' + TL(c.raw)}}},
-      scales: {x: {grid: {display: false}, ticks: {color: renk('--soluk')}}, y: {grid: {color: renk('--cizgi')}, ticks: {color: renk('--soluk'), callback: v => v >= 1000 ? v / 1000 + 'b' : v}}}},
+      scales: {x: {grid: {display: false}, ticks: {color: renk('--soluk')}}, y: {grid: {color: renk('--cizgi')}, ticks: {color: renk('--soluk'), callback: kisa}}}},
   });
 
-  $('hesaplar').innerHTML = B.map(b => `<div class="satir"><span class="ad">${esc(b.ad)}</span><b class="${b.bakiye < 0 ? 'kirmizi' : ''}">${TL(b.bakiye)}</b></div>`).join('');
+  const kv = [['sabit', 'Sabit', 'kira, fatura, abonelik', '#5b6b7f'], ['duzensiz', 'Düzensiz', 'market, yemek, ulaşım…', '#2f9e6e'], ['beklenmedik', 'Beklenmedik', 'arıza, acil, kayıp', renk('--uyari')]];
+  $('kovalar').innerHTML = bu.gider ? kv.map(([k, ad, alt, r]) => `
+    <div class="satir" style="display:block"><div style="display:flex;gap:10px;align-items:center"><span class="nokta" style="background:${r}"></span><span class="ad">${ad}<span class="alt"> · ${alt}</span></span><b>${TL(bu[k])}</b></div>
+    <div class="cubuk"><i style="width:${bu[k] / bu.gider * 100}%;background:${r}"></i></div></div>`).join('')
+    + `<div class="not">${bu.gelirSabit ? `Sabit giderler sabit gelirin <b>%${Math.round(bu.sabit / bu.gelirSabit * 100)}</b>'i.` : 'Bu ay sabit gelir (maaş, kira geliri) girilmedi.'}</div>`
+    : '<div class="bos">Bu ay gider kaydı yok.</div>';
+
+  $('hesaplar').innerHTML = H.map(h => {
+    const d = deger(B.find(x => x.id === h.id));
+    return `<div class="satir" data-h="${h.id}" style="cursor:pointer${h.aktif ? '' : ';opacity:.5'}"><span class="ad">${esc(h.ad)}<div class="alt">${h.aktif ? (h.birim && h.miktar ? miktarYaz(h) : '') : 'gizli'}</div></span><b class="${d < 0 ? 'kirmizi' : ''}">${h.aktif ? TL(d) : ''}</b></div>`;
+  }).join('');
 
   const aktif = bu.gelir - bu.pasif;
   const karsilama = bu.gider ? Math.min(100, Math.round(bu.pasif / bu.gider * 100)) : 0;
@@ -243,21 +376,23 @@ function ozetCiz() {
     <div class="not">Pasif gelir, giderlerin <b>%${karsilama}</b> kadarını karşılıyor. %100 olunca çalışmasan da geçinirsin.</div>
     <div class="cubuk"><i style="width:${karsilama}%;background:#ca8a04"></i></div>` : '<div class="bos">Bu ay gelir kaydı yok.</div>';
 }
+$('incele').onclick = e => { const s = e.target.closest('[data-id]'); if (s) formAc(I.find(x => x.id === +s.dataset.id)); };
 
 /* ---------- Nereye gitti ---------- */
 function nereyeCiz() {
-  const a = $('ay').value, o = ayOzet(a);
+  const a = $('ay').value, f = $('kova').value, o = ayOzet(a, f);
   const d = new Date(+a.slice(0, 4), +a.slice(5) - 1, 1);
-  const onceki = [1, 2, 3].map(n => ayOzet(ayGeri(n, d)));
+  const onceki = [1, 2, 3].map(n => ayOzet(ayGeri(n, d), f));
   const sirali = Object.entries(o.kat).map(([id, t]) => ({k: kat(+id), t, ort: onceki.reduce((s, x) => s + (x.kat[id] || 0), 0) / 3})).sort((x, y) => y.t - x.t);
-  const toplam = o.gider + o.yatirim;
+  const toplam = sirali.reduce((s, x) => s + x.t, 0);
   gPasta?.destroy();
   gPasta = new Chart($('gPasta'), {
     type: 'doughnut',
     data: {labels: sirali.map(s => s.k.ad), datasets: [{data: sirali.map(s => s.t), backgroundColor: sirali.map(s => s.k.renk), borderWidth: 0}]},
     options: {maintainAspectRatio: false, cutout: '68%', plugins: {legend: {display: false}, tooltip: {callbacks: {label: c => `${c.label}: ${TL(c.raw)} (%${Math.round(c.raw / toplam * 100)})`}}}},
   });
-  $('pastaNot').textContent = toplam ? `Toplam ${TL(o.gider)} harcama${o.yatirim ? ` + ${TL(o.yatirim)} yatırım` : ''}` : 'Bu ay kayıt yok.';
+  $('pastaNot').textContent = !toplam ? 'Bu ay kayıt yok.' : f ? `Toplam ${TL(toplam)} ${$('kova').selectedOptions[0].text.toLocaleLowerCase('tr')} harcama`
+    : `Toplam ${TL(o.gider)} harcama${o.yatirim ? ` + ${TL(o.yatirim)} yatırım` : ''} · sabit ${TL(o.sabit)} · düzensiz ${TL(o.duzensiz)} · beklenmedik ${TL(o.beklenmedik)}`;
   $('katListe').innerHTML = sirali.map(s => {
     const fark = s.ort ? Math.round((s.t - s.ort) / s.ort * 100) : null;
     const rozet = fark == null ? '<span class="rozet">yeni</span>' : `<span class="rozet ${fark > 15 ? 'kotu' : fark < -15 ? 'iyi' : ''}">${fark > 0 ? '+' : ''}${fark}%</span>`;
@@ -266,7 +401,7 @@ function nereyeCiz() {
       <div class="cubuk"><i style="width:${s.t / sirali[0].t * 100}%;background:${s.k.renk}"></i></div></div>`;
   }).join('') || '<div class="bos">Bu ay harcama yok.</div>';
 }
-$('ay').onchange = nereyeCiz;
+$('ay').onchange = nereyeCiz; $('kova').onchange = nereyeCiz;
 $('katListe').onclick = e => { const s = e.target.closest('[data-k]'); if (!s) return; $('katFiltre').value = s.dataset.k; sekme('islemler'); };
 
 /* ---------- İşlemler ---------- */
@@ -281,7 +416,7 @@ function listeCiz() {
     const baslik = tr ? `${i.hesap_id ? esc(hes(i.hesap_id).ad) : 'Dışarıdan'} → ${i.hedef_hesap_id ? esc(hes(i.hedef_hesap_id).ad) : 'Dışarıya'}` : esc(k.ad);
     const tutar = tr ? `<span>${TL(i.tutar)}</span>` : `<b class="${i.yon === 'gelir' ? 'yesil' : ''}">${i.yon === 'gelir' ? '+' : '−'}${TL(i.tutar)}</b>`;
     html += `<div class="satir" data-id="${i.id}" style="cursor:pointer"><span class="nokta" style="background:${tr ? 'var(--soluk)' : k.renk}"></span>
-      <div class="ad">${baslik}<div class="alt">${[i.aciklama, tr ? '' : hes(i.hesap_id).ad].filter(Boolean).map(esc).join(' · ')}</div></div>${tutar}
+      <div class="ad">${baslik}<div class="alt">${[i.beklenmedik ? '⚡ beklenmedik' : '', i.aciklama, tr ? '' : hes(i.hesap_id).ad].filter(Boolean).map(esc).join(' · ')}</div></div>${tutar}
       <button class="silik" data-sil="${i.id}" aria-label="Sil">✕</button></div>`;
   }
   $('liste').innerHTML = html || '<div class="bos">Kayıt yok.</div>';
@@ -297,63 +432,195 @@ $('liste').onclick = async e => {
   await yenile();
 };
 
-/* ---------- ekle ---------- */
+/* ---------- Birikim ---------- */
+function birikimCiz() {
+  const t = tahmin(), bu = ayOzet(ayAnahtar(new Date()));
+  const gunAd = g => { const d = new Date(); d.setDate(d.getDate() + g); return d.toLocaleDateString('tr-TR', {day: 'numeric', month: 'short'}); };
+  gTahmin?.destroy();
+  gTahmin = new Chart($('gTahmin'), {
+    type: 'line',
+    data: {labels: t.seri.map((_, g) => gunAd(g)), datasets: [{data: t.seri, borderColor: renk('--vurgu'), borderWidth: 2, pointRadius: 0, tension: .2}]},
+    options: {maintainAspectRatio: false, plugins: {legend: {display: false}, tooltip: {callbacks: {label: c => TL(c.raw)}}},
+      scales: {x: {grid: {display: false}, ticks: {color: renk('--soluk'), maxTicksLimit: 6, maxRotation: 0}}, y: {grid: {color: renk('--cizgi')}, ticks: {color: renk('--soluk'), callback: kisa}}}},
+  });
+  const eksi = t.seri.findIndex(v => v < 0);
+  $('tahminNot').innerHTML = `Bugün ${TL(t.likit)} → 30 gün ${TL(t.seri[30])} · 90 gün ${TL(t.seri[90])}.<br>
+    Düzensiz + beklenmedik gider günde ≈ ${TL(t.gunluk)}; sabitler (maaş, kira, fatura) geçen ayki günlerinde. Düzensiz gelir katılmaz.`
+    + (eksi > 0 ? `<div class="kirmizi" style="margin-top:6px">⚠️ Bu gidişle ${gunAd(eksi)} civarı para eksiye düşer.</div>` : '');
+
+  const acil = G.find(h => /acil/i.test(h.ad));
+  const ayrilan = G.reduce((s, h) => s + h.biriken, 0);
+  $('hedefler').innerHTML = G.map(h => { const y = Math.min(100, Math.round(h.biriken / h.tutar * 100)); return `
+    <div class="satir" style="display:block;cursor:pointer" data-g="${h.id}"><div style="display:flex;gap:10px;align-items:center"><span class="ad">${esc(h.ad)}<span class="alt"> · ${TL(h.biriken)} / ${TL(h.tutar)}</span></span><b>%${y}</b></div>
+    <div class="cubuk"><i style="width:${y}%;background:var(--gelir)"></i></div></div>`; }).join('') || '<div class="bos">Hedef yok. "Acil fon" ile başla.</div>';
+  $('hedefNot').textContent = G.length ? `Hedeflere ayrılan ${TL(ayrilan)} · serbest likit ${TL(t.likit - ayrilan)}. Para hesaplarında durur, burada yalnız ayrılmış sayılır.` : '';
+
+  // Kural tabanlı dağıtım: borç → acil fon (3 aylık zorunlu gider) → hedefler (%60'a kadar) → kalan altın/döviz.
+  const acilHedef = Math.round(3 * (t.sabitGider + t.duzAylik)), acilVar = acil?.biriken || 0;
+  const kalan = bu.gelir - bu.gider - bu.yatirim, adim = [];
+  let r = Math.max(0, kalan);
+  const ver = (ad, ihtiyac, neden) => { const a = Math.min(r, ihtiyac); if (a >= 1) { adim.push([ad, a, neden]); r -= a; } };
+  ver('Borç kapat', D.filter(b => b.yon === 'aldim').reduce((s, b) => s + Number(b.tutar), 0), 'Borç her birikimden önce gelir.');
+  ver('Acil fon', Math.max(0, acilHedef - acilVar), `Hedef: 3 aylık sabit + düzensiz gider = ${TL(acilHedef)}`);
+  const digerleri = G.filter(h => h !== acil && h.biriken < h.tutar);
+  ver('Hedeflere', Math.min(digerleri.reduce((s, h) => s + h.tutar - h.biriken, 0), r * .6), digerleri.map(h => h.ad).join(', '));
+  ver('Altın / döviz', r, "TL'de bekleyen para enflasyonla erir; değerini korumak için.");
+  const enCok = Object.entries(ayOzet(ayAnahtar(new Date()), 'duzensiz').kat).sort((a, b) => b[1] - a[1])[0];
+  $('oneri').innerHTML = (kalan > 0
+    ? `<div class="not" style="margin:0 0 8px">Bu ay artı: <b>${TL(kalan)}</b></div>` + adim.map(([ad, a, neden]) => `
+      <div class="satir"><span class="ad">${ad}<div class="alt">${esc(neden)}</div></span><b>${TL(a)}</b></div>`).join('')
+    : `<div class="bos">Bu ay artı yok (${TL(kalan)}).${enCok ? ` En büyük düzensiz kalem: <b>${esc(kat(+enCok[0]).ad)}</b> ${TL(enCok[1])}.` : ''}</div>`)
+    + `<div class="not">Acil fon: ${TL(acilVar)} / ${TL(acilHedef)}${acil ? '' : ' ("Acil fon" adlı bir hedef aç)'} · Beklenmedik giderler ayda ≈ ${TL(t.bekAylik)}.
+      Kural tabanlı öneri, yatırım tavsiyesi değil.</div>`;
+
+  const v = H.filter(h => h.aktif && h.birim && h.miktar);
+  $('varliklar').innerHTML = v.map(h => {
+    const b = B.find(x => x.id === h.id), maliyet = Number(b?.bakiye || 0), d = deger(b);
+    const fark = maliyet > 0 ? Math.round((d - maliyet) / maliyet * 100) : null;
+    return `<div class="satir"><span class="ad">${esc(h.ad)}<div class="alt">${miktarYaz(h)} · birimi ${KUR?.d[h.birim] ? TL(KUR.d[h.birim]) : '—'}</div></span>
+      <div style="text-align:right"><b>${TL(d)}</b>${fark == null ? '' : `<div class="alt ${fark >= 0 ? 'yesil' : 'kirmizi'}">maliyet ${TL(maliyet)} · ${fark > 0 ? '+' : ''}${fark}%</div>`}</div></div>`;
+  }).join('') || '<div class="bos">Altın/döviz hesabına miktar gir: Özet → Hesaplar → Altın.</div>';
+  $('kurNot').textContent = KUR ? `Kur: finans.truncgil.com · ${new Date(KUR.t).toLocaleString('tr-TR', {dateStyle: 'short', timeStyle: 'short'})}` : 'Kur alınamadı.';
+}
+
+/* ---------- kayıt formu ---------- */
 const f = $('ekleForm');
+// "Bota öğret"te önerilmeyecek sık kelimeler.
+const STOP = new Set(['verdim', 'aldım', 'aldim', 'ödedim', 'harcadım', 'için', 'ile', 'bir', 'lira', 'dün', 'bugün', 'nakit', 'kartla', 'kart',
+  'banka', 'havale', 'geldi', 'yattı', 'girişi', 'giriş', 'çok', 'önceki', 'gün', 'sayım', 'beklenen', 'sayılan']);
+let duzenlenen = null, ogretSec = new Set();
 function katSecenek() {
   const yon = f.yon.value;
-  $('fKat').hidden = yon === 'transfer'; $('fHedef').hidden = yon !== 'transfer';
+  $('fKat').hidden = yon === 'transfer'; $('fHedef').hidden = yon !== 'transfer'; $('fBek').hidden = yon !== 'gider';
   $('fKat').innerHTML = K.filter(k => yon === 'gelir' ? k.tur === 'gelir' : k.tur !== 'gelir').map(k => `<option value="${k.id}">${esc(k.ad)}</option>`).join('');
+  katDegisti();
+}
+// En sık 6 kategori tek dokunuşla; seçili olan vurgulu.
+function katDegisti() {
+  const yon = f.yon.value, say = {};
+  for (const i of I) if (i.yon === yon && i.kategori_id) say[i.kategori_id] = (say[i.kategori_id] || 0) + 1;
+  $('hizli').hidden = yon === 'transfer';
+  $('hizli').innerHTML = Object.entries(say).sort((a, b) => b[1] - a[1]).slice(0, 6).map(([id]) => kat(+id)).filter(k => k.id)
+    .map(k => `<button type="button" class="cip${+f.kategori_id.value === k.id ? ' on' : ''}" data-k="${k.id}">${esc(k.ad)}</button>`).join('');
+  const sec = kat(+f.kategori_id.value);
+  const kelime = [...new Set((duzenlenen?.aciklama || '').toLocaleLowerCase('tr').split(/[^\p{L}\d]+/u))]
+    .filter(w => w.length >= 3 && !/^\d+$/.test(w) && !STOP.has(w) && !(sec.anahtar || []).includes(w)).slice(0, 8);
+  $('ogret').hidden = !kelime.length || yon === 'transfer';
+  $('ogretK').innerHTML = kelime.map(w => `<button type="button" class="cip${ogretSec.has(w) ? ' on' : ''}" data-w="${esc(w)}">${esc(w)}</button>`).join('');
 }
 f.querySelectorAll('[name=yon]').forEach(r => r.onchange = katSecenek);
+$('fKat').onchange = katDegisti;
+$('hizli').onclick = e => { const b = e.target.closest('[data-k]'); if (b) { f.kategori_id.value = b.dataset.k; katDegisti(); } };
+$('ogretK').onclick = e => { const b = e.target.closest('[data-w]'); if (!b) return; const w = b.dataset.w; ogretSec.has(w) ? ogretSec.delete(w) : ogretSec.add(w); katDegisti(); };
 // i verilirse düzenleme (Telegram'dan gelen kaydın kategorisini düzeltmek gibi), yoksa yeni kayıt.
-let duzenlenen = null;
 function formAc(i = null) {
-  duzenlenen = i;
+  duzenlenen = i; ogretSec = new Set();
   f.reset(); $('fHata').textContent = ''; $('fBaslik').textContent = i ? 'Kaydı düzenle' : 'Yeni kayıt';
-  const ops = H.map(h => `<option value="${h.id}">${esc(h.ad)}</option>`).join('');
-  $('fHesap').innerHTML = ops; $('fHedef').innerHTML = ops; $('fHedef').selectedIndex = Math.min(1, H.length - 1);
+  const ops = H.filter(h => h.aktif || h.id === i?.hesap_id || h.id === i?.hedef_hesap_id).map(h => `<option value="${h.id}">${esc(h.ad)}</option>`).join('');
+  $('fHesap').innerHTML = ops; $('fHedef').innerHTML = ops; $('fHedef').selectedIndex = Math.min(1, $('fHedef').options.length - 1);
   f.tarih.value = (i ? i.d : new Date()).toLocaleDateString('sv');
   if (i) f.querySelector(`[name=yon][value=${i.yon}]`).checked = true;
   katSecenek();
   if (i) {
-    f.tutar.value = String(i.tutar).replace('.', ',');
+    f.tutar.value = virgul(i.tutar);
     if (i.kategori_id) f.kategori_id.value = i.kategori_id;
     if (i.hesap_id) f.hesap_id.value = i.hesap_id;
     if (i.hedef_hesap_id) f.hedef_hesap_id.value = i.hedef_hesap_id;
     f.aciklama.value = i.aciklama || '';
+    f.beklenmedik.checked = !!i.beklenmedik;
+    katDegisti();
   }
   $('ekleDlg').showModal(); if (!i) f.tutar.focus();
 }
-$('ekleBtn').onclick = () => formAc();
+$('ekleUst').onclick = () => formAc();
+// Enter (telefonda "Git") da kaydeder: Vazgeç type=button olduğu için varsayılan düğme Kaydet.
 f.onsubmit = async e => {
-  if (e.submitter?.value !== 'kaydet') return;
   e.preventDefault();
-  const tutar = Number(f.tutar.value.replace(/\./g, '').replace(',', '.'));
+  const tutar = sayi(f.tutar.value);
   if (!(tutar > 0)) return $('fHata').textContent = 'Geçerli bir tutar yaz.';
   const yon = f.yon.value, tr = yon === 'transfer';
   if (tr && f.hesap_id.value === f.hedef_hesap_id.value) return $('fHata').textContent = 'Kaynak ve hedef aynı olamaz.';
   // Gün değişmediyse saat korunur (yeni kayıtta şimdiki an, düzenlemede asıl an).
   const asil = duzenlenen ? duzenlenen.d : new Date();
   const tarih = asil.toLocaleDateString('sv') === f.tarih.value ? asil.toISOString() : new Date(f.tarih.value + 'T12:00').toISOString();
-  const satir = {tutar, yon, hesap_id: +f.hesap_id.value, hedef_hesap_id: tr ? +f.hedef_hesap_id.value : null,
-    kategori_id: tr ? null : +f.kategori_id.value, aciklama: f.aciklama.value.trim() || null, tarih};
+  // kaynak 'panel': elle bakılan kayıt incele listesinden çıkar ve bottaki /geri onu silmez.
+  const satir = {tutar, yon, hesap_id: +f.hesap_id.value, hedef_hesap_id: tr ? +f.hedef_hesap_id.value : null, kaynak: 'panel',
+    kategori_id: tr ? null : +f.kategori_id.value, aciklama: f.aciklama.value.trim() || null, tarih, beklenmedik: yon === 'gider' && f.beklenmedik.checked};
   try {
-    if (duzenlenen) await api('islem?id=eq.' + duzenlenen.id, {method: 'PATCH', headers: {Prefer: 'return=minimal'}, body: JSON.stringify(satir)});
-    else await api('islem', {method: 'POST', headers: {Prefer: 'return=minimal'}, body: JSON.stringify({...satir, kaynak: 'panel'})});
+    await yaz('islem', duzenlenen?.id, satir);
+    // Öğretilen kelime yalnız seçilen kategoride kalır; başka kategoride varsa oradan çıkar.
+    for (const w of tr ? [] : ogretSec) for (const k of K) {
+      const var_ = k.anahtar.includes(w), hedef = k.id === satir.kategori_id;
+      if (var_ === hedef) continue;
+      k.anahtar = hedef ? [...k.anahtar, w] : k.anahtar.filter(x => x !== w);
+      await yaz('kategori', k.id, {anahtar: k.anahtar});
+    }
     $('ekleDlg').close(); await yenile();
   } catch (err) { $('fHata').textContent = 'Kaydedilemedi: ' + err.message; }
 };
 
+/* ---------- hesap formu: açılış bakiyesi, altın/döviz miktarı, gizle ---------- */
+const hf = $('hesapForm');
+let hesapId = null;
+hf.birim.innerHTML = Object.entries(BIRIM).map(([k, ad]) => `<option value="${k}">${ad}</option>`).join('');
+const birimGoster = () => { $('hBirim').hidden = !['altin', 'doviz'].includes(hf.tur.value); };
+hf.tur.onchange = () => { birimGoster(); hf.birim.value = hf.tur.value === 'doviz' ? 'USD' : 'GRA'; };
+function hesapAc(h = null) {
+  hesapId = h?.id ?? null; hf.reset(); $('hHata').textContent = ''; $('hBaslik').textContent = h ? 'Hesabı düzenle' : 'Yeni hesap';
+  hf.ad.value = h?.ad ?? ''; hf.tur.value = h?.tur ?? 'nakit'; hf.acilis.value = h ? virgul(Number(h.acilis)) : '';
+  hf.birim.value = h?.birim ?? (h?.tur === 'doviz' ? 'USD' : 'GRA'); hf.miktar.value = virgul(h?.miktar); hf.aktif.checked = h?.aktif ?? true;
+  birimGoster(); $('hesapDlg').showModal();
+}
+$('hesaplar').onclick = e => { const s = e.target.closest('[data-h]'); if (s) hesapAc(hes(+s.dataset.h)); };
+$('hesapYeni').onclick = () => hesapAc();
+hf.onsubmit = async e => {
+  e.preventDefault();
+  const acilis = hf.acilis.value.trim() ? sayi(hf.acilis.value) : 0, miktar = hf.miktar.value.trim() ? sayi(hf.miktar.value) : null;
+  if (Number.isNaN(acilis) || Number.isNaN(miktar)) return $('hHata').textContent = 'Sayıları kontrol et.';
+  const birimli = ['altin', 'doviz'].includes(hf.tur.value);
+  try {
+    await yaz('hesap', hesapId, {ad: hf.ad.value.trim(), tur: hf.tur.value, acilis, aktif: hf.aktif.checked,
+      birim: birimli ? hf.birim.value : null, miktar: birimli ? miktar : null});
+    $('hesapDlg').close(); await yenile();
+  } catch (err) { $('hHata').textContent = /unique|duplicate/i.test(err.message) ? 'Bu adda bir hesap zaten var.' : 'Kaydedilemedi: ' + err.message; }
+};
+
+/* ---------- hedef formu ---------- */
+const gf = $('hedefForm');
+let hedefId = null;
+function hedefAc(h = null) {
+  hedefId = h?.id ?? null; gf.reset(); $('gHata').textContent = ''; $('hedefSil').hidden = !h;
+  gf.ad.value = h?.ad ?? ''; gf.tutar.value = h ? virgul(h.tutar) : ''; gf.biriken.value = h ? virgul(h.biriken) : '';
+  $('hedefDlg').showModal();
+}
+$('hedefler').onclick = e => { const s = e.target.closest('[data-g]'); if (s) hedefAc(G.find(h => h.id === +s.dataset.g)); };
+$('hedefYeni').onclick = () => hedefAc();
+gf.onsubmit = async e => {
+  e.preventDefault();
+  const tutar = sayi(gf.tutar.value), biriken = gf.biriken.value.trim() ? sayi(gf.biriken.value) : 0;
+  if (!(tutar > 0) || !(biriken >= 0)) return $('gHata').textContent = 'Tutarları kontrol et.';
+  try { await yaz('hedef', hedefId, {ad: gf.ad.value.trim(), tutar, biriken}); $('hedefDlg').close(); await yenile(); }
+  catch (err) { $('gHata').textContent = 'Kaydedilemedi: ' + err.message; }
+};
+$('hedefSil').onclick = async () => {
+  if (!confirm('Hedef silinsin mi? (Para hesaplarında kalır.)')) return;
+  await api('hedef?id=eq.' + hedefId, {method: 'DELETE'}); $('hedefDlg').close(); await yenile();
+};
+
 /* ---------- sekmeler ---------- */
-let aktifSekme = sakla.al('kasa_sekme') || 'ozet';
+const SEKMELER = {ozet: ozetCiz, nereye: nereyeCiz, islemler: listeCiz, birikim: birikimCiz};
+let aktifSekme = SEKMELER[sakla.al('kasa_sekme')] ? sakla.al('kasa_sekme') : 'ozet';
 function sekme(s) {
   aktifSekme = s;
-  for (const b of document.querySelectorAll('nav button')) b.classList.toggle('on', b.dataset.s === s);
-  for (const x of ['ozet', 'nereye', 'islemler']) $('s-' + x).hidden = x !== s;
-  ({ozet: ozetCiz, nereye: nereyeCiz, islemler: listeCiz})[s]();
+  for (const b of document.querySelectorAll('nav button[data-s]')) b.classList.toggle('on', b.dataset.s === s);
+  for (const x in SEKMELER) $('s-' + x).hidden = x !== s;
+  SEKMELER[s]();
   sakla.koy('kasa_sekme', s);
 }
-document.querySelector('nav').onclick = e => { const b = e.target.closest('button'); if (b) sekme(b.dataset.s); };
+document.querySelector('nav').onclick = e => {
+  const b = e.target.closest('button'); if (!b) return;
+  b.hasAttribute('data-ekle') ? formAc() : sekme(b.dataset.s);
+};
 
 async function yenile() {
   await yukle();
@@ -363,9 +630,10 @@ async function yenile() {
   sekme(aktifSekme);
 }
 async function ac() {
-  $('giris').hidden = true; $('uygulama').hidden = false; $('ekleBtn').hidden = false;
+  $('giris').hidden = true; $('uygulama').hidden = false;
   $('ay').value = ayAnahtar(new Date());
   await yenile();
+  kurCek().then(() => sekme(aktifSekme)); // kur gelince altın/döviz değeri güncellenir
 }
 (async () => {
   if (!sakla.al('kasa_rt')) return girisGoster();
